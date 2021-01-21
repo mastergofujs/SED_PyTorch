@@ -35,7 +35,7 @@ def setup_args():
     # Parameters below are changeable.
     parser.add_argument('-p', '--patience', type=int, default=50)
     parser.add_argument('-d', "--feature_dim", type=int, default=200)
-    parser.add_argument('-b', "--batch_size", type=int, default=80)
+    parser.add_argument('-b', "--batch_size", type=int, default=128)
     parser.add_argument('-e', "--epoch", type=int, default=50)
     parser.add_argument('-lr', "--learning_rate", type=float, default=0.0002)
     parser.add_argument('-k', "--num_events", type=int, default=6)
@@ -53,8 +53,9 @@ def running(options):
     batch_size = options.batch_size
     epoch = options.epoch
     lr = options.learning_rate
-    beta = 3 * options.latents_dim / options.feature_dim
-    lambda_ = 2 * options.num_events / options.latents_dim
+    latents_dim = 15
+    beta = 3 * latents_dim / options.feature_dim
+    lambda_ = 2 * options.num_events / latents_dim
 
     decoder_loss_fn = nn.BCELoss(reduction='none')
     disent_loss = DisentLoss(K=options.num_events, beta=beta)
@@ -142,7 +143,6 @@ def running(options):
         f1_list.append(f1_test)
         er_list.append(er_test)
         fold_list.append(k)
-        torch.save(sb_vae.state_dict(), options.result_path + sb_vae.name + '/fold_' + str(k) + '_last_weight.h5')
 
     f1_list.append(np.mean(f1_list))
     er_list.append(np.mean(er_list))
