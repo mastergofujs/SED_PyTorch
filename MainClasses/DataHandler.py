@@ -331,6 +331,7 @@ class DataHandler:
         plt.legend(['brakes squeaking', 'car', 'children',
                     'large vehicle', 'people speaking', 'people walking'], loc='lower right', ncol=2)
         plt.title('Distribution of features learned by {}.'.format(name))
+        plt.savefig('aed_data/tut_data/result/distribution.png')
         plt.show()
 
     # load data according to different datasets.
