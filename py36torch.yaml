@@ -1,0 +1,64 @@
+name: py36g
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - ca-certificates=2020.7.22=0
+  - certifi=2020.6.20=py36_0
+  - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libedit=3.1.20191231=h14c3975_1
+  - libffi=3.3=he6710b0_2
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - ncurses=6.2=he6710b0_1
+  - openssl=1.1.1h=h7b6447c_0
+  - pip=20.2.2=py36_0
+  - python=3.6.12=hcff3b4d_2
+  - readline=8.0=h7b6447c_0
+  - setuptools=49.6.0=py36_0
+  - sqlite=3.33.0=h62c20be_0
+  - tk=8.6.10=hbc83047_0
+  - wheel=0.35.1=py_0
+  - xz=5.2.5=h7b6447c_0
+  - zlib=1.2.11=h7b6447c_3
+  - pip:
+    - appdirs==1.4.4
+    - audioread==2.1.8
+    - cffi==1.14.3
+    - chardet==3.0.4
+    - cycler==0.10.0
+    - decorator==4.4.2
+    - idna==2.10
+    - joblib==0.16.0
+    - kiwisolver==1.2.0
+    - librosa==0.8.0
+    - llvmlite==0.34.0
+    - matplotlib==3.3.2
+    - numba==0.51.2
+    - numpy==1.18.0
+    - packaging==20.4
+    - pandas==1.0.0
+    - pillow==7.2.0
+    - pooch==1.2.0
+    - pudb==2019.2
+    - pycparser==2.20
+    - pydensecrf==1.0rc3
+    - pygments==2.7.1
+    - pyparsing==2.4.7
+    - pyprind==2.11.2
+    - python-dateutil==2.8.1
+    - pytz==2020.1
+    - requests==2.24.0
+    - resampy==0.2.2
+    - scikit-learn==0.23.2
+    - scipy==1.5.2
+    - six==1.15.0
+    - sklearn==0.0
+    - soundfile==0.10.3.post1
+    - threadpoolctl==2.1.0
+    - torch==1.1.0
+    - torchvision==0.3.0
+    - urllib3==1.25.10
+    - urwid==2.1.1
+prefix: /home/glj/.conda/envs/py36g
+
