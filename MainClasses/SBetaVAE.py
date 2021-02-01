@@ -1,4 +1,5 @@
-from MainClasses.Utils import *
+from torch import nn
+import torch
 
 
 class LinearAttention(nn.Module):
@@ -30,6 +31,7 @@ class Encoder(nn.Module):
 
         self.ts = ts
         self.feature_dim = feature_dim
+
     def sampling(self, mean, log_var):
         std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(std)
