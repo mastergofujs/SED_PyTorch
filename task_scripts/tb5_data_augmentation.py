@@ -24,7 +24,7 @@ def setup_args():
     DATASET = 'freesound'
     TIMESTEP = 5
     NAME = 'att_s_beta_vae'
-    NFOLDS = 4
+    NFOLDS = 1
     # NUM_EVENTS = 5
     parser.add_argument('-name', "--name", type=str, default=NAME)
     parser.add_argument('-nfolds', "--nfolds", type=int, default=NFOLDS)
@@ -37,10 +37,10 @@ def setup_args():
 
     # Parameters below are changeable.
     parser.add_argument('-b', "--batch_size", type=int, default=128)
-    parser.add_argument('-e', "--epoch", type=int, default=50)
+    parser.add_argument('-e', "--epoch", type=int, default=2)
     parser.add_argument('-lr', "--learning_rate", type=float, default=0.0002)
-    parser.add_argument('-gpu', "--gpu_device", type=str, default='1')
-    parser.add_argument('-m', "--mix_data", type=int, default=0)  # if generate new sub-dataset using freesound
+    parser.add_argument('-gpu', "--gpu_device", type=str, default='0')
+    parser.add_argument('-m', "--mix_data", type=int, default=1)  # if generate new sub-dataset using freesound
     return parser
 
 
@@ -117,7 +117,7 @@ def running(options):
 
     # 4. Now generate new data
     with torch.no_grad():
-        x_augmented = torch.Tensor()
+        x_augmented = torch.Tensor().cuda()
         for n_sample, (x_data, y_data) in enumerate(train_loader):
             dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(x_data.float().cuda())
             dec_x = sb_vae.decoder(z_stars[:, :, 0]) # we generate the first event defaultly.
