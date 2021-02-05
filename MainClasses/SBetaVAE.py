@@ -1,4 +1,5 @@
-from MainClasses.Utils import *
+from torch import nn
+import torch
 
 
 class LinearAttention(nn.Module):
@@ -30,6 +31,7 @@ class Encoder(nn.Module):
 
         self.ts = ts
         self.feature_dim = feature_dim
+
     def sampling(self, mean, log_var):
         std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(std)
@@ -95,7 +97,10 @@ class SBetaVAE(nn.Module):
         self.K = self.op.num_events
         self.return_h = options.return_h
         inputs_dim = self.op.feature_dim
-        latents_dim = self.op.latents_dim
+        if self.K == 5 or self.K == 6:
+            latents_dim = 15
+        else:
+            latents_dim = 15 * self.K // 5
         ts = self.op.time_step
         feature_dim = self.op.feature_dim
 

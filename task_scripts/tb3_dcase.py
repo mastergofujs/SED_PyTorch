@@ -54,6 +54,7 @@ def running(options):
     epoch = options.epoch
     lr = options.learning_rate
     latents_dim = 15
+    options.latents_dim = latents_dim
     beta = 3 * latents_dim / options.feature_dim
     lambda_ = 2 * options.num_events / latents_dim
 
