@@ -68,6 +68,7 @@ def running(options):
     pic = []
     min_plot, mid_plot, max_plot = [], [], []
     plots = [min_plot, mid_plot, max_plot]
+
     for j in range(len(infs)):
         # get event index
         event_index = int(infs[j][0])

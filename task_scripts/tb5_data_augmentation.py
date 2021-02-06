@@ -118,14 +118,14 @@ def running(options):
 
     # 4. Now generate new data
     with torch.no_grad():
-        x_augmented = torch.Tensor().cuda()
+        x_augmented = torch.Tensor()
         for n_sample, (x_data, y_data) in enumerate(train_loader):
             dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(x_data.float().cuda())
             dec_x = sb_vae.decoder(z_stars[:, :, 0]) # we generate the first event defaultly.
             x_augmented = torch.cat([x_augmented, dec_x])
 
     # 5. Retrain a new model and evaluate it
-    train_dataset.x_data = torch.cat([train_dataset.x_data, x_augmented.cpu().numpy()])
+    train_dataset.x_data = torch.cat([train_dataset.x_data, x_augmented.cpu().float().numpy()])
     for e in range(epoch):
         sb_vae.train()
         l_decoders = 0
