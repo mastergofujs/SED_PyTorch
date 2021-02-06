@@ -15,8 +15,8 @@ This folder contains two database directories of the datasets (i.e., Freesound a
      * `audio_target/`: saves the discriminative audio signal which are selected from the original Freesound dataset.
      * `audio/`: saves the short sound segments cut from `audio_target/` via Audacity (a free software). Here, the labels of short sound segments are the same as the label of the long audio signal that they are cut from.
      * `mfccs/`: 
-      * `datas/`: contains MFCC features (`*.pkl` file), named as `mfcc_[events number]_.pkl`).
-      * `labels/`: contains pickle files which are corresponding to feature files.
+        * `datas/`: contains MFCC features (`*.pkl` file), named as `mfcc_[events number]_.pkl`).
+        * `labels/`: contains pickle files which are corresponding to feature files.
      * `noise/`: contains three types of environment noise, which will be used when generating sub-set with different polyphonic level.
      * `result/`: saves the model weights in the training stage and the results of cross evaluation as table files (`*.csv`).
    * `tut_data/`
@@ -64,7 +64,7 @@ dt.mix_data(nevents=k, nsamples=n)
 * `SED_PyTorch/task_scripts/`: This folder contains Python scripts provided for the major experiments implemented in our paper. **It is important to review the code carefully for the replicating work.** We provide five script files for various tasks mentioned in our paper, which correspond to the evaluation experiment on the feature distribution in Fig. 3, the disentanglement evaluation in Fig. 4, the evaluation experiment on DCASE2017 challenge TUT dataset in Table 3, the evaluation experiment on Freesound dataset with various event polyphonic levels in Table 4 and the evaluation experiment on data augmentation in Table 5, respectively. To make these script files easier to read, we encapsulate each script with at least two functions: `setup_args()` for arguments setup and `running()` for preparing input data, building model and executing training/evaluation process. Besides, some of the scripts contain `validation()` and `test()` functions which will not be execute individually but will be called in `running()` function. All the task scripts can be implemented using the following shell command:
 
    ```shell
-  cd SED_PyTorch/tast_scripts/
+cd SED_PyTorch/tast_scripts/
    python [any scripts].py [args] # -h for help
    ```
    Where the optional arguments can be found in `setup_args()​` or `-h​` in terminal and note that, for all experiments, this shell command will implement all the training, validation and testing stage. If you want to execute testing stage only, just set the arguments `e​` (epoch) to 0, which means do not train the model.
@@ -229,5 +229,5 @@ The CPU of our server is Intel(R) Core(TM) i9-9820X CPU @ 3.30GHz and the GPU is
 
 ### PRETRAINED WEIGHTS
 
-At last, in order to make the reproducibility work more efficiently, we provide all the weights of the model using in all the five experiments. The weights file (*\_weights.h5) are saved in the directory of `results`, so if one wants to skip the training stag, he/she needs to put the weights file into the corresponding dataset directories first, then **run each task scripts motioned above, with the parameter e set as 0.**
+At last, in order to make the reproducibility work more efficiently, we provide all the weights of the model using in all the five experiments. The weights file ($*\_weights.h5$) are saved in the directory of `results`, so if one wants to skip the training stag, he/she needs to put the weights file into the corresponding dataset directories first, then **run each task scripts motioned above, with the parameter $e$ set as 0.**
 
