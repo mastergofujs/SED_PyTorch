@@ -229,5 +229,5 @@ The CPU of our server is Intel(R) Core(TM) i9-9820X CPU @ 3.30GHz and the GPU is
 
 ### PRETRAINED WEIGHTS
 
-At last, in order to make the reproducibility work more efficiently, we provide all the weights of the model using in all the five experiments. The weights file ($*\_weights.h5$) are saved in the directory of `results`, so if one wants to skip the training stag, he/she needs to put the weights file into the corresponding dataset directories first, then **run each task scripts motioned above, with the parameter $e$ set as 0.**
+At last, in order to make the reproducibility work more efficiently, we provide all the weights of the model using in all the five experiments. The weights file (*\_weights.h5) are saved in the directory of `results`, so if one wants to skip the training stag, he/she needs to put the weights file into the corresponding dataset directories first, then **run each task scripts motioned above, with the parameter e set as 0.**
 
