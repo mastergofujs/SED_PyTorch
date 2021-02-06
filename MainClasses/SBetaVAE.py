@@ -31,7 +31,6 @@ class Encoder(nn.Module):
 
         self.ts = ts
         self.feature_dim = feature_dim
-
     def sampling(self, mean, log_var):
         std = torch.exp(0.5 * log_var)
         eps = torch.randn_like(std)
@@ -99,8 +98,14 @@ class SBetaVAE(nn.Module):
         inputs_dim = self.op.feature_dim
         if self.K == 5 or self.K == 6:
             latents_dim = 15
+        elif self.K == 10:
+            latents_dim = 30
+        elif self.K == 15:
+            latents_dim = 45
+        elif self.K == 20:
+            latents_dim = 60
         else:
-            latents_dim = 15 * self.K // 5
+            return
         ts = self.op.time_step
         feature_dim = self.op.feature_dim
 

@@ -24,7 +24,7 @@ def setup_args():
     DATASET = 'freesound'
     TIMESTEP = 5
     NAME = 'att_s_beta_vae'
-    NFOLDS = 1
+    NFOLDS = 4
     # NUM_EVENTS = 5
     parser.add_argument('-name', "--name", type=str, default=NAME)
     parser.add_argument('-nfolds', "--nfolds", type=int, default=NFOLDS)
@@ -40,14 +40,15 @@ def setup_args():
     parser.add_argument('-e', "--epoch", type=int, default=2)
     parser.add_argument('-lr', "--learning_rate", type=float, default=0.0002)
     parser.add_argument('-gpu', "--gpu_device", type=str, default='0')
-    parser.add_argument('-m', "--mix_data", type=int, default=1)  # if generate new sub-dataset using freesound
+    parser.add_argument('-m', "--mix_data", type=int, default=0)  # if generate new sub-dataset using freesound
     return parser
 
 
 def running(options):
     dh = DataHandler(options.dataset)
     # 1.First construct polyphonic datasets by mixing single event sound, and extract MFCCs features.
-    dh.mix_data(nevents=5, isUnbalanced=True)
+    if options.mix_data:
+        dh.mix_data(nevents=5, isUnbalanced=True)
     batch_size = options.batch_size
     epoch = options.epoch
     lr = options.learning_rate
@@ -124,7 +125,7 @@ def running(options):
             x_augmented = torch.cat([x_augmented, dec_x])
 
     # 5. Retrain a new model and evaluate it
-    train_dataset.x_data = torch.cat([train_dataset.x_data, x_augmented])
+    train_dataset.x_data = torch.cat([train_dataset.x_data, x_augmented.cpu().numpy()])
     for e in range(epoch):
         sb_vae.train()
         l_decoders = 0
@@ -170,7 +171,7 @@ def running(options):
 def test(options, model, test_loader, fold):
     """
     This function defined the testing stage, which using the test dataset of the DCASE2017 dataset(Table 3 in paper) to
-    evaluate our model
+    evaluate our model.
     :param options: the same one with the other function.
     :param model: the selected model in the validation stage.
     :param test_loader: the test dataset loader.

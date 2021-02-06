@@ -37,9 +37,9 @@ def setup_args():
     parser.add_argument('-b', "--batch_size", type=int, default=128)
     parser.add_argument('-e', "--epoch", type=int, default=50)
     parser.add_argument('-lr', "--learning_rate", type=float, default=0.0002)
-    parser.add_argument('-k', "--num_events", type=int, default=20)  # alter it to change the number of events.
+    parser.add_argument('-k', "--num_events", type=int, default=5)  # alter it to change the number of events.
     parser.add_argument('-gpu', "--gpu_device", type=str, default='0')
-    parser.add_argument('-m', "--mix_data", type=int, default=1)  # if generate new sub-dataset using freesound
+    parser.add_argument('-m', "--mix_data", type=int, default=0)  # if generate new sub-dataset using freesound
     return parser
 
 
@@ -55,23 +55,19 @@ def running(options):
     if K == 5:
         beta = 3
         lambda_ = 1
-        latents_dim = 15
     elif K == 10:
         beta = 4
         lambda_ = 2
-        latents_dim = 30
     elif K == 15:
         beta = 5
         lambda_ = 3
-        latents_dim = 45
     elif K == 20:
         beta = 5
         lambda_ = 3
-        latents_dim = 60
     else:
         return
-    beta = beta * latents_dim / options.feature_dim
-    lambda_ = lambda_ * options.num_events / latents_dim
+    beta = beta * options.latents_dim / options.feature_dim
+    lambda_ = lambda_ * options.num_events / options.latents_dim
 
     decoder_loss_fn = nn.BCELoss(reduction='none')
     disent_loss = DisentLoss(K=options.num_events, beta=beta)
@@ -180,25 +176,19 @@ def validation(options, model, val_loader):
     if K == 5:
         beta = 3
         lambda_ = 1
-        latents_dim = 15
     elif K == 10:
         beta = 4
         lambda_ = 2
-        latents_dim = 30
-
     elif K == 15:
         beta = 5
         lambda_ = 3
-        latents_dim = 45
-
     elif K == 20:
         beta = 5
         lambda_ = 3
-        latents_dim = 60
     else:
         return
-    beta = beta * latents_dim / options.feature_dim
-    lambda_ = lambda_ * options.num_events / latents_dim
+    beta = beta * options.latents_dim / options.feature_dim
+    lambda_ = lambda_ * options.num_events / options.latents_dim
 
     decoder_loss_fn = nn.BCELoss(reduction='none')
     disent_loss = DisentLoss(K=options.num_events, beta=beta)

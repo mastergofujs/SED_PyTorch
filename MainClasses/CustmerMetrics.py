@@ -10,6 +10,25 @@ def r_square(inputs, targets):
     return R2.mean()
 
 
+def mse(inputs, targets):
+    error = (inputs - targets) ** 2
+    return error.mean()
+
+
+def accurate(inputs, targets, label_size):
+    cm = confusion_matrix(y_true=targets, y_pred=inputs, labels=list(range(label_size)))
+    acc_list = [0] * label_size
+    overall_acc = 0
+    for k in range(label_size):
+        if cm[k, :].sum() == 0:
+            acc_list[k] = 0
+        else:
+            acc_list[k] = cm[k, k] / cm[k, :].sum()
+        overall_acc += cm[k, k]
+    overall_acc /= cm.sum()
+    return acc_list, overall_acc
+
+
 def segment_metrics(inputs, targets, K):
     from scipy.signal import medfilt
 
