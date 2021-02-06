@@ -15,8 +15,8 @@ This folder contains two database directories of the datasets (i.e., Freesound a
      * `audio_target/`: saves the discriminative audio signal which are selected from the original Freesound dataset.
      * `audio/`: saves the short sound segments cut from `audio_target/` via Audacity (a free software). Here, the labels of short sound segments are the same as the label of the long audio signal that they are cut from.
      * `mfccs/`: 
-      * `datas/`: contains MFCC features (`*.pkl` file), named as `mfcc_[events number]_.pkl`.
-      * `labels/`: contains pickle files which are corresponding to feature files.
+        * `datas/`: contains MFCC features (`*.pkl` file), named as `mfcc_[events number]_.pkl`).
+        * `labels/`: contains pickle files which are corresponding to feature files.
      * `noise/`: contains three types of environment noise, which will be used when generating sub-set with different polyphonic level.
      * `result/`: saves the model weights in the training stage and the results of cross evaluation as table files (`*.csv`).
    * `tut_data/`
@@ -26,7 +26,7 @@ This folder contains two database directories of the datasets (i.e., Freesound a
 
 * `SED_PyTorch/MainClasses/`
 
-This folder contains several **core files** (Python classes files), which define the data processing, models initialization, the training and evaluation process. The details about each class are given below.
+This folder contains several **core files** (Python classes files), which defines the data processing, models initialization, the training and evaluation process. The details about each class are given below.
 
   * `DataHandler.py`: This Python script defines the class of parameter initialization and data processing, which contain several methods for data preprocessing, such as `enframe()`, `windowing()`, etc. Besides, it provides all the raw input data for each task script by `load_data()` method. Note that, the most important parameter of `load_data()` is `fold`, which is used to generate the training and validation set. It is worth mentioning that the method `mix_data()` is essential for the Freesound dataset, because it is used to generate the sub-dataset with various polyphonic levels. Here is the usage of mixing the polyphonic sound for Freesound dataset:
     1.Load `DataHandler` class and create an object:
@@ -61,15 +61,15 @@ dt.mix_data(nevents=k, nsamples=n)
     sb_vae = SBetaVAE(options)
     ```
   
-* `SED_PyTorch/task_scripts/`: This folder contains Python scripts provided for the major experiments implemented in our paper. **It is important to review the code carefully for the replicating work.** We provide five script files for various tasks mentioned in our paper, which correspond to the evaluation experiment on the feature distribution in Fig. 3, the disentanglement evaluation in Fig. 4, the evaluation experiment on DCASE2017 challenge TUT dataset in Table 3, the evaluation experiment on Freesound dataset with various event polyphonic levels in Table 4 and the evaluation experiment on data augmentation in Table 5, respectively. To make these script files easier to read, we reseal each script with at least two functions: `setup_args()​` for arguments setup and `running()` for preparing input data, building model and executing training/evaluation process. Besides, some of the scripts contain `validation()​` and ​`test()​` functions which will not be execute individually but will be called in `running()​` function. All the task scripts can be implemented using the following shell command:
+* `SED_PyTorch/task_scripts/`: This folder contains Python scripts provided for the major experiments implemented in our paper. **It is important to review the code carefully for the replicating work.** We provide five script files for various tasks mentioned in our paper, which correspond to the evaluation experiment on the feature distribution in Fig. 3, the disentanglement evaluation in Fig. 4, the evaluation experiment on DCASE2017 challenge TUT dataset in Table 3, the evaluation experiment on Freesound dataset with various event polyphonic levels in Table 4 and the evaluation experiment on data augmentation in Table 5, respectively. To make these script files easier to read, we encapsulate each script with at least two functions: `setup_args()` for arguments setup and `running()` for preparing input data, building model and executing training/evaluation process. Besides, some of the scripts contain `validation()` and `test()` functions which will not be execute individually but will be called in `running()` function. All the task scripts can be implemented using the following shell command:
 
    ```shell
-   cd SED_PyTorch/tast_scripts/
+cd SED_PyTorch/tast_scripts/
    python [any scripts].py [args] # -h for help
    ```
    Where the optional arguments can be found in `setup_args()​` or `-h​` in terminal and note that, for all experiments, this shell command will implement all the training, validation and testing stage. If you want to execute testing stage only, just set the arguments `e​` (epoch) to 0, which means do not train the model.
    
-   Although such command can be used to repeat the experiments, it is necessary to give a detailed introduction for each task script. **It is important to emphasize that we need execute these task scripts in the order listed below since their results are dependent with each other.**
+   Although such command can be used to repeat the experiments, it is necessary to give a detailed introduction for each task script. **It is important to emphasize that one needs to execute these task scripts following the order given below as later task script may dependent on the outputs from previous ones.**
 
    - `tb4_various_events.py`: This script evaluates the performance of our methods on data of various polyphonic levels made from Freesound as shown in Table 4 in the accepted paper. In this script, there are many optional arguments which will determine the structure of the model. We can conduct this experiment after we choose suitable value for each optional argument. For example, if we want to train our model with the samples which contain 10 event categories,  and in this case, the parameter `k​` should be set as 10 and the other hyper-parameters $\beta$, $\lambda$ and `latent_dim​` will be set as 4, 2 and 30 automatically. Therefore we just need to call the shell command below to conduct this evaluation experiment:
 
@@ -77,6 +77,7 @@ dt.mix_data(nevents=k, nsamples=n)
      python tb4_various_events.py -k 10 # here "-k" is short of "--num_events"
      ```
      
+   
    Here, It's important to note that the argument `-m` denotes whether we need generate new data, and it is set as 1 as default if you want generate new data, and when you do not need to generate new data, set as 0. **As we have uploaded the sub-dataset for this experiments, it needn't to generate them again.**
    
   * `fig4_disentanglement_visualization.py`: This script is used to evaluate the disentanglement performance, listed as in Fig. 4 in our paper . To qualitatively show event-specific disentangled factors learned by supervised $\beta$-VAE, we need to call the shell command below, which contains five major steps:
@@ -177,7 +178,7 @@ dt.mix_data(nevents=k, nsamples=n)
              n_ += 1
              x_data, y_data = test_dataset[item]
              with torch.no_grad():
-               ..., bottleneck_features, ... = sb_vae(torch.from_numpy(x_data))
+               ..., bottleneck_features, ... = sb_vae(torch.from_numpy(x_data)                                                                                                  .float().cuda())
                h_out = torch.cat([h_out, torch.relu(bottleneck_features)[:, :, i]])
        ```
   
