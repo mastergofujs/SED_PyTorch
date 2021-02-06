@@ -178,7 +178,7 @@ dt.mix_data(nevents=k, nsamples=n)
              n_ += 1
              x_data, y_data = test_dataset[item]
              with torch.no_grad():
-               ..., bottleneck_features, ... = sb_vae(torch.from_numpy(x_data)                                                                                                  .float().cuda())
+               ..., bottleneck_features, ... = sb_vae(torch.from_numpy(x_data).float().cuda())
                h_out = torch.cat([h_out, torch.relu(bottleneck_features)[:, :, i]])
        ```
   
