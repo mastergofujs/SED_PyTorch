@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from argparse import ArgumentParser
 import torch
 from torch import nn
+import numpy as np
 import os
 
 
@@ -37,7 +38,7 @@ def setup_args():
 
     # Parameters below are changeable.
     parser.add_argument('-b', "--batch_size", type=int, default=128)
-    parser.add_argument('-e', "--epoch", type=int, default=2)
+    parser.add_argument('-e', "--epoch", type=int, default=50)
     parser.add_argument('-lr', "--learning_rate", type=float, default=0.0002)
     parser.add_argument('-gpu', "--gpu_device", type=str, default='0')
     parser.add_argument('-m', "--mix_data", type=int, default=0)  # if generate new sub-dataset using freesound
@@ -71,7 +72,7 @@ def running(options):
 
     test_dataset = TorchDataset(options, type_='test', fold=1)
     test_loader = DataLoader(test_dataset, pin_memory=True,
-                             batch_size=batch_size, num_workers=4,
+                             batch_size=batch_size, num_workers=0,
                              shuffle=True)
 
     # 3.train the model with unbalanced data
@@ -112,26 +113,37 @@ def running(options):
                 print()
 
     f1_test, er_test, binary_acc = test(options, model=sb_vae, test_loader=test_loader, fold=1)
-    torch.save(sb_vae.state_dict(), options.result_path + sb_vae.name + '/fold_' + str(1) + '_cp_weight.h5')
     print('Before data augmentation: F1={}, ER={}'.format(f1_test, er_test))
     print('ACC: ', binary_acc)
 
     # 4. Now generate new data
     with torch.no_grad():
-        x_augmented = torch.Tensor()
+        train_loader = DataLoader(train_dataset, pin_memory=True,
+                                  batch_size=1, num_workers=0,
+                                  shuffle=True)
+        x_augmented = torch.Tensor().cuda()
+        y_augmented = torch.Tensor().cuda()
         for n_sample, (x_data, y_data) in enumerate(train_loader):
+            if not y_data[0, 0] == 0:
+                continue
             dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(x_data.float().cuda())
-            dec_x = sb_vae.decoder(z_stars[:, :, 0]) # we generate the first event defaultly.
+            dec_x = sb_vae.decoder(z_stars[:, :, 0])  # we generate the first event default.
             x_augmented = torch.cat([x_augmented, dec_x])
+            y_augmented = torch.cat([y_augmented, y_data.cuda().float()])
 
     # 5. Retrain a new model and evaluate it
-    train_dataset.x_data = torch.cat([train_dataset.x_data, x_augmented.cpu().float().numpy()])
+    train_dataset.x_data = np.concatenate([train_dataset.x_data, x_augmented.cpu().float().numpy()])
+    train_dataset.y_data = np.concatenate([train_dataset.y_data, y_augmented.cpu().float().numpy()])
+    sb_vae = SBetaVAE(options)
     for e in range(epoch):
         sb_vae.train()
         l_decoders = 0
         l_detectors = 0
         l_disents = 0
         loss_datas = 0
+        train_loader = DataLoader(train_dataset, pin_memory=True,
+                                  batch_size=batch_size, num_workers=0,
+                                  shuffle=True)
         for n_sample, (x_data, y_data) in enumerate(train_loader):
             dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(x_data.float().cuda())
             l_decoder = torch.mean(decoder_loss_fn(dec_out.reshape(len(x_data), -1), x_data.float().cuda()))
@@ -161,14 +173,13 @@ def running(options):
                 print(loss_df)
                 print('binary accurate', binary_acc)
                 print()
-
-    f1_test, er_test, binary_acc = test(options, model=sb_vae, test_loader=test_loader, fold=1)
-    torch.save(sb_vae.state_dict(), options.result_path + sb_vae.name + '/fold_' + str(1) + '_cp_weight.h5')
+    torch.save(sb_vae.state_dict(), options.result_path + sb_vae.name + '/fold_' + str(1) + '_DA_weight.h5')
+    f1_test, er_test, binary_acc = test(options, model=sb_vae, test_loader=test_loader, fold=1, weight='DA')
     print('After data augmentation: F1={}, ER={}'.format(f1_test, er_test))
     print('ACC: ', binary_acc)
 
 
-def test(options, model, test_loader, fold):
+def test(options, model, test_loader, fold, weight='cp'):
     """
     This function defined the testing stage, which using the test dataset of the DCASE2017 dataset(Table 3 in paper) to
     evaluate our model.
@@ -178,7 +189,8 @@ def test(options, model, test_loader, fold):
     :param fold: the K-th fold.
     :return: f1 score and ER of the test dataset.
     """
-    model.load_state_dict(torch.load(options.result_path + model.name + '/fold_' + str(fold) + '_cp_weight.h5'))
+    model.load_state_dict(torch.load(options.result_path + model.name + '/fold_' + str(fold) + '_' + weight
+                                     + '_weight.h5'))
     with torch.no_grad():
         model.eval()
         detector_outs, y_datas = torch.Tensor(), torch.Tensor()
@@ -205,6 +217,7 @@ def test(options, model, test_loader, fold):
         print('binary accurate', binary_acc)
         print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
         return f1_score, error_rate, binary_acc
+
 
 if __name__ == '__main__':
     args = setup_args()
