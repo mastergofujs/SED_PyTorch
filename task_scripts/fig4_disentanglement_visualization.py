@@ -80,10 +80,11 @@ def running(options):
                 indexs.append(index)
 
         # get z* and decode it to reconstruct MFCCs
-        dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(torch.from_numpy(test_data).float().cuda())
+
+        dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(torch.from_numpy(test_data[indexs][:5000]).float().cuda())
         dim = int(infs[j][1])
-        max_z = z_stars[:, dim].max()
-        min_z = z_stars[:, dim].min()
+        max_z = z_stars[:, dim, event_index].max()
+        min_z = z_stars[:, dim, event_index].min()
         mid_z = (max_z + min_z) / 2.0
         infs[j][2] = min_z
         infs[j][3] = mid_z
@@ -93,7 +94,9 @@ def running(options):
         idx = 0
         for value in [min_z, mid_z, max_z]:
             z_stars[:, dim] = value
-            generated_datas = sb_vae.decoder(z_stars)[0]
+            generated_datas = sb_vae.decoder(z_stars[:, :, event_index])
+            generated_datas = generated_datas.detach().cpu().numpy()
+
             for i in range(0, num_to_generate):
                 x = generated_datas[i][(options.num_events - 1) * options.feature_dim:]
                 x = np.reshape(x, (options.feature_dim, 1))
@@ -107,6 +110,7 @@ def running(options):
         pic.append(np.abs(plots[2] - plots[1]))
         # delta(mid, min)
         pic.append(np.abs(plots[1] - plots[0]))
+
     # plot delta maps
     plt.figure(figsize=(20, 15))
     for p in range(len(pic)):

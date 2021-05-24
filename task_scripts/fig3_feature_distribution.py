@@ -32,6 +32,7 @@ def setup_args():
     parser.add_argument('-o', "--result_path", type=str, default='../aed_data/' + DATASET + '/result/')
     parser.add_argument('-k', "--num_events", type=int, default=NUM_EVENTS)
     parser.add_argument('-rh', "--return_h", type=bool, default=True)
+    parser.add_argument('-d', "--feature_dim", type=int, default=200)
     parser.add_argument('-n', '--num_samples', type=int, default=2000)
 
     # Parameters below are changeable.

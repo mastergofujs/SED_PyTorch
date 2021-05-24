@@ -38,10 +38,10 @@ def setup_args():
 
     # Parameters below are changeable.
     parser.add_argument('-b', "--batch_size", type=int, default=128)
-    parser.add_argument('-e', "--epoch", type=int, default=10)
+    parser.add_argument('-e', "--epoch", type=int, default=20)
     parser.add_argument('-lr', "--learning_rate", type=float, default=0.0002)
     parser.add_argument('-gpu', "--gpu_device", type=str, default='0')
-    parser.add_argument('-m', "--mix_data", type=int, default=0)  # if generate new sub-dataset using freesound
+    parser.add_argument('-m', "--mix_data", type=int, default=1)  # if generate new sub-dataset using freesound
     return parser
 
 
@@ -127,10 +127,12 @@ def running(options):
         for n_sample, (x_data, y_data) in enumerate(train_loader):
             if not y_data[0, 0] == 0:
                 continue
+            y_data_ = torch.zeros(y_data.shape)
+            y_data_[0] = 1.
             dec_out, detectors_out, z_stars, alphas, (mu, log_var) = sb_vae(x_data.float().cuda())
             dec_x = sb_vae.decoder(z_stars[:, :, 0])  # we generate the first event default.
             x_augmented = torch.cat([x_augmented, dec_x])
-            y_augmented = torch.cat([y_augmented, y_data.cuda().float()])
+            y_augmented = torch.cat([y_augmented, y_data_.cuda().float()])
             count += 1
             if count >= 1000:
                 break
@@ -138,8 +140,8 @@ def running(options):
     # 5. Retrain a new model and evaluate it
     train_dataset.x_data = np.concatenate([train_dataset.x_data, x_augmented.cpu().float().numpy()])
     train_dataset.y_data = np.concatenate([train_dataset.y_data, y_augmented.cpu().float().numpy()])
-    sb_vae = SBetaVAE(options).cuda()
-    for e in range(epoch):
+    # sb_vae = SBetaVAE(options).cuda()
+    for e in range(5):
         sb_vae.train()
         l_decoders = 0
         l_detectors = 0

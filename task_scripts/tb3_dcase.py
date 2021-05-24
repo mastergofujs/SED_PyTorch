@@ -160,8 +160,9 @@ def validation(options, model, val_loader):
     :param val_loader: the validation data loader.
     :return: the loss, f1 score and ER from the validation dataset.
     """
-    beta = 3 * options.latents_dim / options.feature_dim
-    lambda_ = 2 * options.num_events / options.latents_dim
+    latents_dim = 15
+    beta = 3 * latents_dim / options.feature_dim
+    lambda_ = 2 * options.num_events / latents_dim
 
     decoder_loss_fn = nn.BCELoss(reduction='none')
     disent_loss = DisentLoss(K=options.num_events, beta=beta)

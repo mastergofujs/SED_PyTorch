@@ -11,6 +11,7 @@ from argparse import ArgumentParser
 from torch.utils.data import DataLoader
 from torch import nn
 import torch
+import os
 
 
 def setup_args():
@@ -55,19 +56,23 @@ def running(options):
     if K == 5:
         beta = 3
         lambda_ = 1
+        latents_dim = 15
     elif K == 10:
         beta = 4
         lambda_ = 2
+        latents_dim = 30
     elif K == 15:
         beta = 5
         lambda_ = 3
+        latents_dim = 45
     elif K == 20:
         beta = 5
         lambda_ = 3
+        latents_dim = 60
     else:
         return
-    beta = beta * options.latents_dim / options.feature_dim
-    lambda_ = lambda_ * options.num_events / options.latents_dim
+    beta = beta * latents_dim / options.feature_dim
+    lambda_ = lambda_ * options.num_events / latents_dim
 
     decoder_loss_fn = nn.BCELoss(reduction='none')
     disent_loss = DisentLoss(K=options.num_events, beta=beta)
@@ -176,19 +181,23 @@ def validation(options, model, val_loader):
     if K == 5:
         beta = 3
         lambda_ = 1
+        latents_dim = 15
     elif K == 10:
         beta = 4
         lambda_ = 2
+        latents_dim = 30
     elif K == 15:
         beta = 5
         lambda_ = 3
+        latents_dim = 45
     elif K == 20:
         beta = 5
         lambda_ = 3
+        latents_dim = 60
     else:
         return
-    beta = beta * options.latents_dim / options.feature_dim
-    lambda_ = lambda_ * options.num_events / options.latents_dim
+    beta = beta * latents_dim / options.feature_dim
+    lambda_ = lambda_ * options.num_events / latents_dim
 
     decoder_loss_fn = nn.BCELoss(reduction='none')
     disent_loss = DisentLoss(K=options.num_events, beta=beta)
@@ -271,4 +280,6 @@ def test(options, model, test_loader, fold):
 if __name__ == '__main__':
     args = setup_args()
     options = args.parse_args()
+    gpu = options.gpu_device
+    os.environ['CUDA_VISIBLE_DEVICES'] = gpu
     running(options)
